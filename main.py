@@ -1,15 +1,11 @@
 from tkinter import *
 import tkinter.messagebox as box
 
-def generateScript(Event):
-    if validateInputs():
-        print("Generating...")
-        print("CREATE USER '" + txtUser.get() + "'@'" + txtHost.get()+ "' IDENTIFIED BY '" + txtPassword.get() + "';")
-
-def terminateProg(Event):
-    exit()
-    
 def validateInputs():
+    if len(txtDB.get()) == 0:
+        box.showerror("Error", "Please fill in Datavase Name")
+        txtDB.focus()
+        return False
     if len(txtUser.get()) == 0:
         box.showerror("Error", "Please fill in User Name")
         txtUser.focus()
@@ -19,6 +15,29 @@ def validateInputs():
         txtPassword.focus()
         return False
     return True
+
+def generateScript(Event):
+    if validateInputs():
+        print("Generating...")
+        print("CREATE USER '" + txtUser.get() + "'@'" + txtHost.get()+ "' IDENTIFIED BY '" + txtPassword.get() + "';")
+        permissionList = list()
+        for key in permissionDic:
+            if permissionVal[key].get():
+                permissionList.append(key)
+        if len(permissionList) > 0:
+            print("GRANT " + ', '.join(permissionList) + " ON '" + txtDB.get() + "'.* TO '" + txtUser.get() + "'@'" + txtHost.get()+ "';")
+
+def terminateProg(Event):
+    exit()
+    
+# Permissions available
+permissionDic = {
+    'SELECT': 1,
+    'INSERT': 0,
+    'UPDATE': 0,
+    'DELETE': 0,
+    'EXECUTE': 0
+}
 
 # Defines the layout
 root = Tk()
@@ -30,33 +49,36 @@ bottomFrame = Frame(root)
 bottomFrame.pack(side=BOTTOM)
 
 # Get user info
+lblDB = Label(topFrame, text="Database:")
+lblDB.grid(row=0, sticky=E)
+txtDB = Entry(topFrame, width=15)
+txtDB.grid(row=0, column=1, columnspan=3, sticky=W)
 lblUser = Label(topFrame, text="User name:")
 txtUser = Entry(topFrame, width=10)
-lblUser.grid(row=0, sticky=E)
-txtUser.grid(row=0, column=1, sticky=W)
+lblUser.grid(row=1, sticky=E)
+txtUser.grid(row=1, column=1, sticky=W)
 lblAt = Label(topFrame, text="@")
-lblAt.grid(row=0,column=2, sticky=W)
+lblAt.grid(row=1,column=2, sticky=W)
 txtHost = Entry(topFrame, width=15)
-txtHost.grid(row=0, column=3, sticky=W)
+txtHost.grid(row=1, column=3, sticky=W)
 
 lblPassword = Label(topFrame, text="Password:")
 txtPassword = Entry(topFrame, width=20)
-lblPassword.grid(row=1, sticky=E)
-txtPassword.grid(row=1, column=1, columnspan=3, sticky=W)
+lblPassword.grid(row=2, sticky=E)
+txtPassword.grid(row=2, column=1, columnspan=3, sticky=W)
 
 # Get user permissions
 lblPermissions = Label(permissionFrame, text="Permissions:")
 lblPermissions.grid(row=0,columnspan=4, sticky=W)
-chkSelect = Checkbutton(permissionFrame, text="SELECT")
-chkSelect.grid(row=1, column=0)
-chkInsert = Checkbutton(permissionFrame, text="INSERT")
-chkInsert.grid(row=1, column=1)
-chkUpdate = Checkbutton(permissionFrame, text="UPDATE")
-chkUpdate.grid(row=1, column=2)
-chkDelete = Checkbutton(permissionFrame, text="DELETE")
-chkDelete.grid(row=1, column=3)
-chkExecute = Checkbutton(permissionFrame, text="EXECUTE")
-chkExecute.grid(row=1, column=3)
+
+colCount = 0
+permissionVal = dict()
+for key in permissionDic:
+    #print(key, '==', permissionDic[key])
+    permissionVal[key] = IntVar()
+    chkPermission = Checkbutton(permissionFrame, text=key, variable=permissionVal[key])
+    chkPermission.grid(row=1, column=colCount, sticky=W)
+    colCount += 1
 
 # action buttons
 btnGenerate = Button(bottomFrame, text="Generate", fg="blue")
@@ -68,7 +90,5 @@ btnGenerate.pack(side=LEFT)
 btnCancel.pack(side=RIGHT)
 
 # Initialization 
-txtUser.focus()
-root.title = "MySQL Create User Script Generator"
+txtDB.focus()
 root.mainloop()
-
