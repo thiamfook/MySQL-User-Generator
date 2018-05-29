@@ -21,8 +21,8 @@ def generateScript(Event):
         print("Generating...")
         print("CREATE USER '" + txtUser.get() + "'@'" + txtHost.get()+ "' IDENTIFIED BY '" + txtPassword.get() + "';")
         permissionList = list()
-        for key in permissionDic:
-            if permissionVal[key].get():
+        for key in privilegeDic:
+            if privilegeVal[key].get():
                 permissionList.append(key)
         if len(permissionList) > 0:
             print("GRANT " + ', '.join(permissionList) + " ON '" + txtDB.get() + "'.* TO '" + txtUser.get() + "'@'" + txtHost.get()+ "';")
@@ -31,7 +31,7 @@ def terminateProg(Event):
     exit()
     
 # Permissions available
-permissionDic = {
+privilegeDic = {
     'SELECT': 1,
     'INSERT': 0,
     'UPDATE': 0,
@@ -43,8 +43,8 @@ permissionDic = {
 root = Tk()
 topFrame = Frame(root)
 topFrame.pack()
-permissionFrame = Frame(root)
-permissionFrame.pack()
+privilegeFrame = Frame(root)
+privilegeFrame.pack()
 bottomFrame = Frame(root)
 bottomFrame.pack(side=BOTTOM)
 
@@ -67,16 +67,17 @@ txtPassword = Entry(topFrame, width=20)
 lblPassword.grid(row=2, sticky=E)
 txtPassword.grid(row=2, column=1, columnspan=3, sticky=W)
 
-# Get user permissions
-lblPermissions = Label(permissionFrame, text="Permissions:")
-lblPermissions.grid(row=0,columnspan=4, sticky=W)
+# Get user privileges
+lblPrivileges = Label(privilegeFrame, text="Privileges:")
+lblPrivileges.grid(row=0,columnspan=4, sticky=W)
 
+# Draw check boxes of privileges
 colCount = 0
-permissionVal = dict()
-for key in permissionDic:
-    #print(key, '==', permissionDic[key])
-    permissionVal[key] = IntVar()
-    chkPermission = Checkbutton(permissionFrame, text=key, variable=permissionVal[key])
+privilegeVal = dict()
+for key in privilegeDic:
+    #print(key, '==', privilegeDic[key])
+    privilegeVal[key] = IntVar()
+    chkPermission = Checkbutton(privilegeFrame, text=key, variable=privilegeVal[key])
     chkPermission.grid(row=1, column=colCount, sticky=W)
     colCount += 1
 
