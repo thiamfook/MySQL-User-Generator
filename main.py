@@ -3,15 +3,15 @@ import tkinter.messagebox as box
 
 def validateInputs():
     if len(txtDB.get()) == 0:
-        box.showerror("Error", "Please fill in Datavase Name")
+        box.showerror("Error", "Please fill in Database Name.")
         txtDB.focus()
         return False
     if len(txtUser.get()) == 0:
-        box.showerror("Error", "Please fill in User Name")
+        box.showerror("Error", "Please fill in User Name.")
         txtUser.focus()
         return False
     if len(txtPassword.get()) < 6:
-        box.showerror("Error", "Please fill in a valid Password")
+        box.showerror("Error", "Please fill in a valid Password, minimum 6 characters required.")
         txtPassword.focus()
         return False
     return True
